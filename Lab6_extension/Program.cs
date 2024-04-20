@@ -1,4 +1,5 @@
-﻿using Lab6_extension.extension;
+﻿using System.Net.Http.Headers;
+using Lab6_extension.extension;
 
 
 
@@ -27,9 +28,9 @@ Console.WriteLine("Hello, World!dd");
 new { a = 1, b = 3, }.Operacja2(i => i.a + i.a);
 
 
-var l = new List<int>(){7, 3, 1, 2, 3, 4, 5, 6, 0};
+var l = new List<int>() { 7, 3, 1, 2, 3, 4, 5, 6, 0 };
 // uniwersalne sortowanie bombelkowe, predykat służy do porównywania obiektów w liscie
-var l2 = l.BubbleSort1((a,b)=>a-b);
+var l2 = l.BubbleSort1((a, b) => a - b);
 String.Join(',', l).PrintObj();
 String.Join(',', l2).PrintObj();
 
@@ -38,9 +39,22 @@ var lu = new List<User>(){
     new User{Name="Bartek", Id=1},
     new User{Name="Tomek", Id=2},
 };
-var lu2 = lu.BubbleSort1((a,b)=>a.Name.CompareTo(b.Name));
+var lu2 = lu.BubbleSort1((a, b) => a.Name.CompareTo(b.Name));
 String.Join(',', lu).PrintObj();
 String.Join(',', lu2).PrintObj();
 
 
 
+
+var z = new Zoo()
+{
+    list = new List<Animal>() { new Animal { Name = "A", }, new Animal { Name = "b" } }
+};
+// przykład wykorzystania ekspresji
+z.ToStringExp().PrintObj();
+1.ToStringExp().PrintObj();
+
+ 
+// z.Operacja3(i => i.Name == "A"); // błąd, interpreter nie wie jaki typ przypisać i
+z.Operacja3((Animal i) => i.Name == "A").ToStringExp().PrintObj();
+z.Operacja3<Zoo,Animal>(i => i.Name == "A").ToStringExp().PrintObj();

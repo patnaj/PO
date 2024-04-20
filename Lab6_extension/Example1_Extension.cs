@@ -1,4 +1,9 @@
 
+using System.Collections;
+using System.Data.Common;
+using System.Formats.Asn1;
+using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -87,6 +92,47 @@ namespace Lab6_extension.extension
             }
             return _out;
         }
+
+
+        /// <summary>
+        /// Wyświetla wszystkie własciwosci korzystając ekspresje, może zastąpić overide ToString
+        /// </summary>
+        /// <param name="a"></param>
+        public static string ToStringExp<C>(this C a) //where C : class
+        {
+            var t = a?.GetType();
+            if (t == null)
+                return "null";
+            else if (t.IsValueType || a is string)
+                return $"{a}";
+            else if (a is IEnumerable<object> list)
+            {
+                return $"[{String.Join(", ", list.Select(i => i.ToStringExp()))}]";
+            }
+            else if (t.IsClass)
+            {
+                var pl = t.GetProperties().Select(p => $"{p.Name}: {p.GetValue(a).ToStringExp()}");
+                return $"{t.Name} =>({String.Join(", ", pl)})";
+            }
+            return "err";
+        }
+
+        /*
+        Problemowy przykład
+        */
+
+        public static C Operacja3<O, C>(this O a, Func<C, bool> f) where O : Zoo where C : Animal
+        {
+            // return (C)a.list.First(f);
+            return (C)a.list.First((Func<Animal, bool>)f);
+            // return (C)a.list.First(i => f((C)i));
+        }
+
     }
+
+    public class Animal { public string Name { get; set; } = ""; }
+
+    public class Zoo { public List<Animal> list { get; set; } = new List<Animal>(); }
+
 }
 
